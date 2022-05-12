@@ -1,0 +1,191 @@
+rightTarget = Line(330,400,290,400, arrowStart = True)
+# Works Cited
+# none
+
+##### set up #####
+app.background = gradient('lavender','purple', 'black')
+app.stepsPerSecond = 50 # small number means slow
+app.level = 0
+app.patternInPlay = False
+app.score = 0 
+
+### shapes ###
+# arrow targets 
+upTarget = Line(240,405,240,445, arrowStart = True)
+leftTarget = Line(70,400,110,400, arrowStart = True)
+leftTarget.dy = 1
+downTarget = Line(165,445,165,405, arrowStart = True)
+rightTarget = Line(330,400,290,400, arrowStart = True)
+# up
+upArrow = Polygon(230,95,230,125,250,125,250,95,
+    270,95,240,65,210,95, fill = None, border = 'black')
+# left
+leftArrow = Polygon(120,90,120,110,90,110,
+    90,130,60,100,90,70,90,90,120,90, fill = None, border = 'black')
+# down
+downArrow = Polygon(175,65,155,65,155,95,
+    135,95,165,125,195,95,175,95, fill = None, border = 'black')
+# right
+rightArrow = Polygon(280,110,280,90,310,90,310,70,
+    340,100,310,130,310,110,280,110, fill = None, border = 'black')
+
+### Text ###
+# Game title Heading
+Label('Arrow Arrow Revolution!', 200, 45, size = 25, 
+bold = True, fill = 'white', border = 'black', font = 'orbitron')
+
+# popups for gameplay
+perfect = Label("Perfect!", 200,200, size= 35, bold = True, fill = 'blue', 
+font = 'orbitron' )
+
+miss = Label("Miss!",200,200, size = 35, bold = True, fill = 'red', 
+font = 'orbitron')    
+# makes popups invisible  
+perfect.visible = False
+miss.visible = False 
+
+label= Label("SCORE:" + str(app.score), 50, 380, fill = 'white')
+label.visible = False
+
+
+### title screen ###
+title = Group(
+        Polygon(0,0,0,400,400,400,400,0, fill = gradient('black','purple','lavender')),
+        Label('Arrow', 200, 145,fill='yellow', size = 50, font = 'orbitron'),
+        Label('Arrow', 200, 195,fill='yellow', size = 50, font = 'orbitron'),
+        Label('Revolution!', 200, 245, fill = 'yellow', size = 50, font = 'orbitron'),
+        Label('press "space" to start', 200, 315, fill='white')
+        )
+title.visible = False
+begin = Label('Begin!', 200,200, size = 60, font= 'orbitron', 
+    fill = None, border = 'yellow')
+    
+#gameover screen 
+winner = Group(
+    Polygon(0,0,0,400,400,400,400,0, fill = gradient('darkBlue', 'blue', 'white')),
+    Label('YOU', 200, 145, fill = 'lightBlue', size = 75, font = 'orbitron'),
+    Label('WIN!', 200, 205, fill = 'lightBlue', size = 75, font = 'orbitron'),
+    
+    )
+    
+loser = Group(
+    Polygon(0,0,0,400,400,400,400,0, fill = gradient('white', 'red', 'maroon')),
+    Label('YOU', 200, 145, fill = 'Black', size = 75, font = 'orbitron'),
+    Label('Lose!', 200, 205, fill = 'black', size = 75, font = 'orbitron'),
+    )
+winner.visible = False
+loser.visible = False
+
+##### Actual game #####
+
+### Lables ###
+def clearLabels():
+    if (miss.opacity > 2):
+        miss.opacity -= 5
+    else: 
+        miss.visible = False
+    
+    if (perfect.opacity > 2):
+        perfect.opacity -= 5
+    else: 
+        perfect.visible = False
+           
+
+
+    
+
+### Gameplay Keys ###
+def onKeyPress(Keys):
+    if (Keys == 'space'):
+        title.clear()
+        begin.visible = True
+        app.level = 1
+    if (Keys == 'p'):
+        if (app.paused == False):
+            app.paused = True
+        else:
+            app.paused = False 
+    if (Keys == 'left'):
+        leftTarget.dy = 0
+        
+        # left arrow detection
+        if (leftArrow.containsShape(leftTarget) == True):
+            app.score += 1
+            leftTarget.visible = False
+        else:
+            leftTarget.visible = False
+            app.score -= 1
+        # update score label
+        label.value = "SCORE:" + str(app.score)
+    if (Keys == 'up'):
+        upTarget.dy = 0
+        if (upArrow.containsShape(upTarget) == True):
+            app.score += 1
+            upTarget.visible = False
+        else:
+            upTarget.visible = False
+            app.score -= 1
+        label.value = "SCORE:" + str(app.score)
+    if (Keys == 'down'):
+        downTarget.dy = 0
+        if (downArrow.containsShape(downTarget) == True):
+            app.score += 1
+            downTarget.visible = False
+        else:
+            downTarget.visible = False
+            app.score -= 1
+        label.value = "SCORE:" + str(app.score)
+    if (Keys == 'right'):
+        rightTarget.dy = 0
+        if (rightArrow.containsShape(rightTarget) == True):
+            app.score += 1
+            rightTarget.visible = False
+        else:
+            rightTarget.visible = True
+            app.score -= 1
+        label.value = "SCORE:" + str(app.score)
+
+# screens when game runs
+def onStep():
+    if (app.level == 0):
+        # title screen
+            title.visible = True
+            begin.visible = False
+        
+    elif (app.level == 1):
+        # arrows display one after the other
+        label.visible = True
+        if (app.patternInPlay == True):
+            
+            leftTarget.y1 -= 2
+            leftTarget.y2 -= 2
+            if (leftTarget.visible == False):
+                downTarget.y1 -= 2 
+                downTarget.y2 -= 2
+                if (downTarget.visible == False):
+                    upTarget.y1 -= 2
+                    upTarget.y2 -= 2
+                    if (upTarget.visible == False):
+                        perfect.visible = False
+                        miss.visible = False
+                        rightTarget.y1 -= 2
+                        rightTarget.y2 -= 2 
+          
+        #causes label to dissapear 
+        if (begin.opacity > 2):
+            begin.opacity -= 5
+        else:
+            begin.visible = False
+            app.patternInPlay = True
+        if (rightTarget.visible == False):
+            app.level = 2
+    #ending screen
+    elif (app.level == 2):
+        if (app.score == 4):
+            winner.visible = True
+        else: 
+            loser.visible = True
+  
+   
+
+
